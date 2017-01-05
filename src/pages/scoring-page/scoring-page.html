@@ -1,0 +1,161 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>
+      Test App
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+
+    <ion-row>
+      <ion-col width-20>
+        <div [ngSwitch]="eventType">
+          <template [ngSwitchCase]="'SINGLES'">
+            <div class="player">
+              <input type='radio' name='players' id="{{team1.getPlayers()[0].getPlayerId()}}" [checked]="team1.isServing()" [disabled]="isPlayerDisabled" (change)="servingClick($event)" />
+              <label for='team1'>{{team1.getPlayers()[0].getPlayerName()}}</label>
+            </div>
+            <div class="firstserver" *ngIf="team1.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+          <template [ngSwitchCase]="'DOUBLES'">
+            <div class="player">
+              <ion-row *ngFor="let player of team1.getPlayers()">
+                <input type='radio' name='players' id="{{player.getPlayerId()}}" [checked]="player.isServing()" [disabled]="player.isDisabled()" (change)="servingClick($event)" />
+                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+              </ion-row>
+            </div>
+            <div class="firstserver" *ngIf="team1.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+        </div>
+      </ion-col>
+      <ion-col>
+        <button ion-button id="1" [class.button--round]="point.getPointType()!=='SIDEOUT'" [class.button--round--sideOut]="point.getPointType() ==='SIDEOUT'" class="button--round" *ngFor="let point of team1.getPoints()" [disabled]="point.getIsClickedFromType()"
+        (click)="captureScore(point.getPointScore(),$event)">{{ point.getPointScore() }}</button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col width-20>
+        <div [ngSwitch]="eventType">
+          <template [ngSwitchCase]="'SINGLES'">
+            <div class="player">
+              <input type='radio' name='players' id="{{team2.getPlayers()[0].getPlayerId()}}" [checked]="team2.isServing()" [disabled]="isPlayerDisabled" (change)="servingClick($event)" />
+              <label for='team2'>{{team2.getPlayers()[0].getPlayerName()}}</label>
+            </div>
+            <div class="firstserver" *ngIf="team2.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+          <template [ngSwitchCase]="'DOUBLES'">
+            <div class="player">
+              <ion-row *ngFor="let player of team2.getPlayers()">
+                <input type='radio' name='players' id="{{player.getPlayerId()}}" [checked]="player.isServing()" [disabled]="player.isDisabled()" (change)="servingClick($event)" />
+                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+              </ion-row>
+            </div>
+            <div class="firstserver" *ngIf="team2.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+        </div>
+      </ion-col>
+      <ion-col>
+        <button ion-button id="2" [class.button--round]="point.getPointType()!=='SIDEOUT'" [class.button--round--sideOut]="point.getPointType() ==='SIDEOUT'" *ngFor="let point of team2.getPoints()" [disabled]="point.getIsClickedFromType()" (click)="captureScore(point.getPointScore(),$event)">{{ point.getPointScore() }}</button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+  <button margin-right ion-button class="button--medium" (click)="startGame()">Start Game</button>
+  <button margin-right ion-button class="button--medium" [disabled]="isSideOutDisabled" (click)="sideOut()">{{sideOutLabel}}</button>
+  <button margin-right ion-button class="button--medium" [hidden]="isFinishGameDisabled">Finish Game</button>
+  <ion-grid>
+    <!--<ion-row>
+      <ion-col width-20>
+        <div class="score">
+          <label>Score</label>
+        </div>
+      </ion-col>
+      <ion-col width-40>
+        <div [class.score-display]="team1.isServing()" [class.score]="!team1.isServing()">
+          <label>{{team1.getScore()}}</label>
+        </div>
+        <div class="firstserver" *ngIf="team1.isFirstServing()">
+          <h3>S</h3>
+        </div>
+      </ion-col>
+      <ion-col width-40>
+        <div [class.score-display]="team2.isServing()" [class.score]="!team2.isServing()">
+          <label>{{team2.getScore()}}</label>
+        </div>
+        <div class="firstserver" *ngIf="team2.isFirstServing()">
+          <h4>S</h4>
+        </div>
+      </ion-col>
+    </ion-row>-->
+    <ion-row>
+      <ion-col width-20>
+        <div [ngSwitch]="eventType">
+          <template [ngSwitchCase]="'SINGLES'">
+            <div [class.player]="!team1.isServing()" [class.score-display]="team1.isServing()">
+              <label for='team1'>{{team1.getPlayers()[0].getPlayerName()}}</label>
+            </div>
+            <div class="firstserver" *ngIf="team1.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+          <template [ngSwitchCase]="'DOUBLES'">
+            <div class="player">
+              <ion-row *ngFor="let player of team1.getPlayers()">
+                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+              </ion-row>
+            </div>
+            <div class="firstserver" *ngIf="team1.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+        </div>
+      </ion-col>
+      <ion-col width-20>
+        <div [class.score-display]="team1.isServing()" [class.score]="!team1.isServing()">
+          <label>{{team1.getScore()}}</label>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col width-20>
+        <div [ngSwitch]="eventType">
+          <template [ngSwitchCase]="'SINGLES'">
+            <div [class.player]="!team2.isServing()" [class.score-display]="team2.isServing()">
+              <label for='team2'>{{team2.getPlayers()[0].getPlayerName()}}</label>
+            </div>
+            <div class="firstserver" *ngIf="team2.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+          <template [ngSwitchCase]="'DOUBLES'">
+            <div class="player">
+              <ion-row *ngFor="let player of team2.getPlayers()">
+                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+              </ion-row>
+            </div>
+            <div class="firstserver" *ngIf="team2.isFirstServing()">
+              <h3>S</h3>
+            </div>
+          </template>
+        </div>
+      </ion-col>
+      <ion-col width-20>
+        <div [class.score-display]="team2.isServing()" [class.score]="!team2.isServing()">
+          <label>{{team2.getScore()}}</label>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

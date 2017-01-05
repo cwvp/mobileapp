@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>
+      Test App
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngFor="let event of playevents">
+      <div style="z-index: 1000;" on-tap="eventClicked(event)">
+        <h2>{{event.eventName}}</h2>
+        <h2>{{event.dateAndTime}}</h2>
+        <p>{{event.venue}}</p>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

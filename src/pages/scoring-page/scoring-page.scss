@@ -1,0 +1,62 @@
+page-scoring {
+  @mixin buttonRound($button_color){
+    width: 30px;
+    height: 30px;
+    border: solid 1px #000;
+    border-radius: 50%;
+    background-color: $button_color;
+}
+  @mixin labelPosition($margin_top,$text_align){
+    margin-top: $margin_top;
+    text-align: $text_align;
+  }
+  @mixin highlighted($font_size,$font_weight){
+    font-size: $font_size;
+    font-weight: $font_weight;
+  }
+  .button--round {
+    @include buttonRound(map-get($colors, 'primary'));
+  }
+  .button--round--sideOut {
+    @include buttonRound(map-get($colors, 'danger'));
+  }
+
+  .button--medium {
+    min-width: 140px;
+  }
+
+  .player {
+    @include labelPosition(20px,center);
+
+    input {
+      visibility: hidden;
+
+    }
+    label{
+      font-size: 20px;
+    }
+
+    input:checked + label {
+      @include highlighted(27px,bold);
+    }
+  }
+  .firstserver {
+    margin-left: 20px;
+    text-align: right;
+  }
+  .firstserver-doubles {
+    color: red
+  }
+  .score{
+    @include labelPosition(20px,center);
+    label{
+      font-size: 20px;
+    }
+  }
+  .score-display{
+    @include labelPosition(20px,center);
+    label{
+      @include highlighted(27px,bold);
+    }
+  }
+}

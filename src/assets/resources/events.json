@@ -1,0 +1,32 @@
+{
+  "events": [
+    {
+      "eventName": "Men's Singles Event",
+      "dateAndTime": "Mon, 27 Jun 2016 05:50:34 GMT",
+      "venue": "Phoenix",
+      "eventType": "SINGLES",
+      "maxPointPerGame": "21"
+    },
+    {
+      "eventName": "Women's Singles Event",
+      "dateAndTime": "Mon, 27 Jun 2016 07:50:34 GMT",
+      "venue": "Phoenix",
+      "eventType": "SINGLES",
+      "maxPointPerGame": "15"
+    },
+    {
+      "eventName": "Men's Doubles Event",
+      "dateAndTime": "Mon, 27 Jun 2016 09:50:34 GMT",
+      "venue": "Phoenix",
+      "eventType": "DOUBLES",
+      "maxPointPerGame": "21"
+    },
+    {
+      "eventName": "Women's Doubles Event",
+      "dateAndTime": "Mon, 27 Jun 2016 11:50:34 GMT",
+      "venue": "Phoenix",
+      "eventType": "DOUBLES",
+      "maxPointPerGame": "11"
+    }
+  ]
+}
