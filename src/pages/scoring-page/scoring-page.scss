@@ -55,8 +55,6 @@ page-scoring {
   }
   .score-display{
     @include labelPosition(20px,center);
-    label{
-      @include highlighted(27px,bold);
-    }
+    @include highlighted(27px,bold);
   }
 }

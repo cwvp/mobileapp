@@ -112,7 +112,7 @@
           <template [ngSwitchCase]="'DOUBLES'">
             <div class="player">
               <ion-row *ngFor="let player of team1.getPlayers()">
-                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+                <label [class.score-display]="player.isServing()" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
               </ion-row>
             </div>
             <div class="firstserver" *ngIf="team1.isFirstServing()">
@@ -142,7 +142,7 @@
           <template [ngSwitchCase]="'DOUBLES'">
             <div class="player">
               <ion-row *ngFor="let player of team2.getPlayers()">
-                <label for="{{player.getPlayerId()}}" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
+                <label [class.score-display]="player.isServing()" [class.firstserver-doubles]="player.isFirstServing()">{{player.getPlayerName()}}</label>
               </ion-row>
             </div>
             <div class="firstserver" *ngIf="team2.isFirstServing()">
