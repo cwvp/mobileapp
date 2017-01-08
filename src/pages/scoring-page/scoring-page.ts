@@ -4,6 +4,7 @@ import { PopupPage } from '../popup-page/popup-page';
 import { PointModel } from '../../models/point.model';
 import { TeamModel } from '../../models/team.model';
 import { PlayerModel } from '../../models/player.model';
+import { SummaryModel } from '../../models/summary.model';
 
 @Component({
   selector: 'page-scoring',
@@ -13,30 +14,32 @@ export class ScoringPage {
   points: number[];
   teams: TeamModel[] = [];
   teamPoints: PointModel[] = [];
+  summary: SummaryModel[]=[];
 
   team1: TeamModel;
   team2: TeamModel;
 
   isPlayerDisabled: boolean;
   isSideOutDisabled: boolean;
+  isUndoDisabled: boolean;
   isFinishGameDisabled: boolean;
   isFirstTimeForDoubles: boolean = false;
+  nowServing:number;
 
   eventType: string;
   maxPointPerGame: any;
-
-  sideOutLabel: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl: ModalController) {
     this.eventType = this.navParams.get('eventType');
     this.maxPointPerGame = this.navParams.get('maxPointPerGame');
     this.isFinishGameDisabled = true;
+    this.isUndoDisabled=true;
     this.isSideOutDisabled = true;
     this.isPlayerDisabled = true;
     this.points = [];
     this.teamPoints = [];
     this.teams = [];
-    this.sideOutLabel = "Side Out";
+    this.nowServing=2;
     for (let k: number = 1; k <= this.maxPointPerGame; k++) {
       this.points[k - 1] = k;
       let teamPoint = new PointModel(k, "INITIAL");
@@ -49,9 +52,6 @@ export class ScoringPage {
     this.teams.push(this.team2);
   }
   captureScore(point, $event) {
-    /*console.log("this.team1.isServing():"+this.team1.isServing());
-    console.log("this.team2.isServing():"+this.team2.isServing());
-    console.log($event.currentTarget.id + "," + point);*/
     if (($event.currentTarget.id == 1 && this.team1.isServing())
       || ($event.currentTarget.id == 2 && this.team2.isServing())) {
       (this.team1.isServing() ? this.team1.getPoints() : this.team2.getPoints()).forEach(teamPoint => {
@@ -70,6 +70,8 @@ export class ScoringPage {
         this.team2.setScore(point);
       }
     }
+    /* Setting summary */
+    this.summary.push(new SummaryModel(1,'captureScore',[this.team1,this.team2]));
   }
   servingClick($event) {
     /* This is to temporarily enable serving for both teams(on first click)
@@ -80,6 +82,20 @@ export class ScoringPage {
     }*/
     /* Capture starting Server ID */
     /*this.sideOutLabel = "Side Out";*/
+    if(this.nowServing===1){
+      this.nowServing=2;
+    }else{
+      /*if(this.team1.isServing())
+        this.team1.getPlayers().forEach(
+          player=> player.setDisabled(true)
+        );
+      else
+        this.team2.getPlayers().forEach(
+        player=> player.setDisabled(true)
+      );*/
+      this.nowServing=1;
+    }
+    
     switch ($event.currentTarget.id) {
       case 'team1':
         this.team1.setFirstServing(true);
@@ -92,7 +108,7 @@ export class ScoringPage {
       case 'player1A':
         this.team1.getPlayers()[0].setServing(true);
         this.team1.setServing(true);
-        this.team1.getPlayers()[1].setDisabled(true);
+        /*this.team1.getPlayers()[1].setDisabled(true);*/
         /* Very first click after start Game*/
         if (!this.isFirstServingChoosenForDoubles()) {
           this.isFirstTimeForDoubles = true;
@@ -101,9 +117,8 @@ export class ScoringPage {
         } if (!this.team1.getPlayers()[0].isFirstServing()
           && !this.team1.getPlayers()[1].isFirstServing()) {
           this.team1.getPlayers()[0].setFirstServing(true);
-          /* Changing side out label to change player serve*/
-          this.sideOutLabel = "Change Player Serve";
           this.isSideOutDisabled = false;
+          this.isUndoDisabled=false;
           /* Enabling current team/player score board */
           this.team1.getPoints().forEach(teamPoint => {
             teamPoint.setPointType("AVAILABLE");
@@ -113,7 +128,7 @@ export class ScoringPage {
       case 'player1B':
         this.team1.getPlayers()[1].setServing(true);
         this.team1.setServing(true);
-        this.team1.getPlayers()[0].setDisabled(true);
+      /*  this.team1.getPlayers()[0].setDisabled(true);*/
         /* Very first click after start Game*/
         if (!this.isFirstServingChoosenForDoubles()) {
           this.isFirstTimeForDoubles = true;
@@ -122,9 +137,8 @@ export class ScoringPage {
         } if (!this.team1.getPlayers()[0].isFirstServing()
           && !this.team1.getPlayers()[1].isFirstServing()) {
           this.team1.getPlayers()[1].setFirstServing(true);
-          /* Changing side out label to change player serve*/
-          this.sideOutLabel = "Change Player Serve";
           this.isSideOutDisabled = false;
+          this.isUndoDisabled=false;
           /* Enabling current team/player score board */
           this.team1.getPoints().forEach(teamPoint => {
             teamPoint.setPointType("AVAILABLE");
@@ -134,7 +148,7 @@ export class ScoringPage {
       case 'player2A':
         this.team2.getPlayers()[0].setServing(true);
         this.team2.setServing(true);
-        this.team2.getPlayers()[1].setDisabled(true);
+      /*  this.team2.getPlayers()[1].setDisabled(true);*/
         /* Very first click after start Game*/
         if (!this.isFirstServingChoosenForDoubles()) {
           this.isFirstTimeForDoubles = true;
@@ -143,9 +157,8 @@ export class ScoringPage {
         } if (!this.team2.getPlayers()[0].isFirstServing()
           && !this.team2.getPlayers()[1].isFirstServing()) {
           this.team2.getPlayers()[0].setFirstServing(true);
-          /* Changing side out label to change player serve*/
-          this.sideOutLabel = "Change Player Serve";
           this.isSideOutDisabled = false;
+          this.isUndoDisabled=false;
           /* Enabling current team/player score board */
           this.team2.getPoints().forEach(teamPoint => {
             teamPoint.setPointType("AVAILABLE");
@@ -155,7 +168,7 @@ export class ScoringPage {
       case 'player2B':
         this.team2.getPlayers()[1].setServing(true);
         this.team2.setServing(true);
-        this.team2.getPlayers()[0].setDisabled(true);
+      /*  this.team2.getPlayers()[0].setDisabled(true);*/
         /* Very first click after start Game*/
         if (!this.isFirstServingChoosenForDoubles()) {
           this.isFirstTimeForDoubles = true;
@@ -164,9 +177,8 @@ export class ScoringPage {
         } if (!this.team2.getPlayers()[0].isFirstServing()
           && !this.team2.getPlayers()[1].isFirstServing()) {
           this.team2.getPlayers()[1].setFirstServing(true);
-          /* Changing side out label to change player serve*/
-          this.sideOutLabel = "Change Player Serve";
           this.isSideOutDisabled = false;
+          this.isUndoDisabled=false;
           /* Enabling current team/player score board */
           this.team2.getPoints().forEach(teamPoint => {
             teamPoint.setPointType("AVAILABLE");
@@ -178,6 +190,7 @@ export class ScoringPage {
     /* Disabling server selection for Singles after first Server is choosen */
     if (this.eventType.toUpperCase() === 'SINGLES') {
       this.isSideOutDisabled = false;
+      this.isUndoDisabled=false;
       this.isPlayerDisabled = true;
       /* Disabling server selection for Doubles is controlled inside the html itself */
       /* Enabling current team/player score board */
@@ -196,23 +209,26 @@ export class ScoringPage {
         });
       /* Only for first time server click on Doubles */
       if (this.isFirstTimeForDoubles) {
+        this.nowServing=2;
         this.isSideOutDisabled = false;
-        /* Changing side out label to change player serve*/
-        this.sideOutLabel = "Change Player Serve";
+        this.isUndoDisabled=false;
         (($event.currentTarget.id.indexOf("player1") > -1) ? this.team1.getPoints() : this.team2.getPoints())
           .forEach(teamPoint => {
             teamPoint.setPointType("AVAILABLE");
           });
+        /*Disabling serve for second player on "game first" serving  team*/
+        (($event.currentTarget.id.indexOf("player1") > -1) ? this.team1.getPlayers(): this.team2.getPlayers())
+            .forEach(player => {
+              if(!player.isServing())
+                player.setDisabled(true);
+            });
         this.isFirstTimeForDoubles = false;
       }
     }
   }
   sideOut() {
-    console.log("this.sideOutLabel:" + this.sideOutLabel)
-    if (this.sideOutLabel === "Change Player Serve") {
-      /* Changing label back to side out*/
-      this.sideOutLabel = "Side Out";
-      /* Switching player serve within team */
+  /*  if (this.sideOutLabel === "Change Player Serve") {
+      /* Switching player serve within team
       if (this.team1.isServing()) {
         this.team1.getPlayers().forEach(player => {
           if (player.isServing()) {
@@ -232,7 +248,7 @@ export class ScoringPage {
             player.setServing(true);
         })
       }
-    } else {
+    } else {*/
       if (this.team1.isServing()) {
         /* Switching serves on side out */
         this.team2.setServing(true);
@@ -241,6 +257,7 @@ export class ScoringPage {
           if (!this.team2.getPlayers()[0].isFirstServing() &&
             !this.team2.getPlayers()[1].isFirstServing()) {
             this.isSideOutDisabled = true;
+            this.isUndoDisabled=true;
             /* Disabling other server score board till they choose first server */
             this.team2.getPoints().forEach(teamPoint => {
               teamPoint.setPointType("INITIAL")
@@ -266,11 +283,11 @@ export class ScoringPage {
           this.team1.getPlayers().forEach(player => {
             player.setServing(false);
           })
-          /* Highlighting first server on sideOut */
+          /* Highlighting first server on sideOut
           this.team2.getPlayers().forEach(player => {
             if (player.isFirstServing())
               player.setServing(true);
-          })
+          })*/
         }
         this.team1.setServing(false);
         /* Marking side out score and disabling current server scoreboard*/
@@ -297,6 +314,7 @@ export class ScoringPage {
           if (!this.team1.getPlayers()[0].isFirstServing() &&
             !this.team1.getPlayers()[1].isFirstServing()) {
             this.isSideOutDisabled = true;
+            this.isUndoDisabled=true;
             /* Disabling other server score board till they choose first server */
             this.team1.getPoints().forEach(teamPoint => {
               teamPoint.setPointType("INITIAL")
@@ -322,11 +340,11 @@ export class ScoringPage {
           this.team2.getPlayers().forEach(player => {
             player.setServing(false);
           })
-          /* Highlighting first server on sideOut */
+          /* Highlighting first server on sideOut
           this.team1.getPlayers().forEach(player => {
             if (player.isFirstServing())
               player.setServing(true);
-          })
+          })*/
         }
         /* Marking side out score and disabling current server scoreboard */
         this.team2.getPoints().forEach(teamPoint => {
@@ -343,12 +361,15 @@ export class ScoringPage {
           })
         }
       }
-    }
+  }
+  undo(){
+
   }
   startGame() {
 
     let addModal = this.modalCtrl.create(PopupPage);
     addModal.present();
+
 
     /* Disabling player serves before selecting first server */
     this.isPlayerDisabled = false;
@@ -360,10 +381,10 @@ export class ScoringPage {
     this.team2.getPlayers().forEach(player => {
       player.setDisabled(false);
     });
-    /*  if (this.eventType.toUpperCase() === 'DOUBLES') {
-      this.team1.setServing(true);
-      this.team2.setServing(true);
-    }*/
+
+    /* Setting summary */
+    this.summary.push(new SummaryModel(1,'startGame',[this.team1,this.team2]));
+
   }
   isFirstServingChoosenForDoubles(): boolean {
     if (!this.team1.getPlayers()[0].isFirstServing()
