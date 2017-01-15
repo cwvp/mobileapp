@@ -24,6 +24,7 @@ export class ScoringPage {
   isUndoDisabled: boolean;
   isFinishGameDisabled: boolean;
   isStartGameDisabled:boolean;
+  skipScoring:boolean;
   isFirstTimeForDoubles: boolean = false;
   nowServing:number;
 
@@ -53,6 +54,7 @@ export class ScoringPage {
     this.isSideOutDisabled = true;
     this.isPlayerDisabled = true;
     this.isStartGameDisabled=false;
+    this.skipScoring=false;
     this.points = [];
     this.teamPoints = [];
     this.teams = [];
@@ -65,17 +67,24 @@ export class ScoringPage {
     /* Setting team,players and initial points */
     this.team1 = new TeamModel(((this.eventObj.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 1", "team1", false, false, true)] : [new PlayerModel("Player 1A", "player1A", false, false, true), new PlayerModel("Player 1B", "player1B", false, false, true)]), this.teamPoints, 0, false);
     this.team2 = new TeamModel(((this.eventObj.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 2", "team2", false, false, true)] : [new PlayerModel("Player 2A", "player2A", false, false, true), new PlayerModel("Player 2B", "player2B", false, false, true)]), this.teamPoints, 0, false);
-    console.log(this.team1);
     this.teams.push(this.team1);
     this.teams.push(this.team2);
   }
   captureScore(point, $event) {
     if (($event.currentTarget.id == 1 && this.team1.isServing())
       || ($event.currentTarget.id == 2 && this.team2.isServing())) {
+      this.skipScoring=false;
       (this.team1.isServing() ? this.team1.getPoints() : this.team2.getPoints()).forEach(teamPoint => {
-        if (teamPoint.getPointScore() === point)
+        if(teamPoint.getPointScore()=== (point-1) && point>1){
+          if(teamPoint.getPointType() === 'AVAILABLE'){
+            this.showAlert();
+            this.skipScoring=true;
+          }
+        }
+        if (!this.skipScoring && teamPoint.getPointScore() === point)
           teamPoint.setPointType("CLICKED");
       });
+      if(!this.skipScoring){
       /* Showing Finish Game after the last point is clicked */
       if (point == this.eventObj.maxPointPerGame) {
         this.isFinishGameDisabled = false;
@@ -88,6 +97,8 @@ export class ScoringPage {
         this.team2.setScore(point);
       }
     }
+    }
+    if(!this.skipScoring){
     /* Setting summary */
     this.summary.push(new SummaryModel(1,'captureScore',[this.team1,this.team2]));
     if(point === this.sideSwitch){
@@ -98,6 +109,7 @@ export class ScoringPage {
       });
       alert.present();
     }
+  }
   }
   servingClick($event) {
     /* This is to temporarily enable serving for both teams(on first click)
@@ -421,5 +433,13 @@ export class ScoringPage {
       return false;
     else
       return true;
+  }
+  showAlert() {
+    let toast = this.alertCtrl.create({
+      title: 'Invalid scoring',
+      subTitle: "Can't skip score",
+      buttons: ['OK']
+    });
+    toast.present();
   }
 }
