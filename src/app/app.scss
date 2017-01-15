@@ -15,8 +15,20 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 $text-input-highlight-color-valid:	#FFFFFF;
+.toolbar-title {
+  color: black;
+  text-align: center;
+  text-transform: uppercase;
+}
 
+.toolbar-background {
+  background-color: #d1f079;
+}
 
 ion-col{
-  border: thin solid gray;
+  border: thin solid black;
+}
+
+.content-md {
+      background-color: #d1df5c;
 }

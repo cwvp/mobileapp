@@ -1,7 +1,7 @@
 <ion-header>
-  <ion-navbar color="primary">
+  <ion-navbar>
     <ion-title>
-      Test App
+      Pickleball App
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -10,9 +10,33 @@
   <ion-list>
     <ion-item *ngFor="let event of playevents">
       <div style="z-index: 1000;" on-tap="eventClicked(event)">
-        <h2>{{event.eventName}}</h2>
-        <h2>{{event.dateAndTime}}</h2>
-        <p>{{event.venue}}</p>
+        <ion-row>
+          <ion-col class="no-border">
+            <strong>{{event.tournamentName}}</strong>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col width-80 class="no-border">
+            <h2>{{event.eventName}}</h2>
+          </ion-col>
+          <ion-col width-20 class="no-border">
+            Match:<strong>{{event.matchNumber}}</strong>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="no-border">
+            <h3>{{event.dateAndTime}}</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col width-80 class="no-border">
+            <p>{{event.venue}}</p>
+          </ion-col>
+          <ion-col width-20 class="no-border">
+            <p>Court:<strong>{{event.courtNumber}}</strong></p>
+          </ion-col>
+        </ion-row>
+
       </div>
     </ion-item>
   </ion-list>

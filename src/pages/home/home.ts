@@ -20,10 +20,7 @@ export class HomePage {
     });
   }
   eventClicked(event) {
-    this.navCtrl.push(ScoringPage, {
-      eventType: event.eventType,
-      maxPointPerGame:event.maxPointPerGame
-    });
+    this.navCtrl.push(ScoringPage, { data: event });
   }
 
 }

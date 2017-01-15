@@ -6,6 +6,17 @@ page-home {
       border-radius: 50%
   }
   .button--medium {
-  min-width: 140px;
-}
+      min-width: 140px;
+  }
+  .no-border{
+    border: none;
+  }
+  .background.scroll-content {
+    background: url(../assets/100_jugs_green_1.jpg) no-repeat;
+    background-size: cover;
+  }
+  .scroll-content {
+    background: url(../assets/100_jugs_green_1.jpg) no-repeat;
+    background-size: cover;
+  }
 }

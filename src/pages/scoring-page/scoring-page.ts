@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavController, NavParams } from 'ionic-angular';
+import { ModalController, NavController, NavParams, ViewController,AlertController } from 'ionic-angular';
 import { PopupPage } from '../popup-page/popup-page';
 import { PointModel } from '../../models/point.model';
 import { TeamModel } from '../../models/team.model';
@@ -23,31 +23,49 @@ export class ScoringPage {
   isSideOutDisabled: boolean;
   isUndoDisabled: boolean;
   isFinishGameDisabled: boolean;
+  isStartGameDisabled:boolean;
   isFirstTimeForDoubles: boolean = false;
   nowServing:number;
 
-  eventType: string;
-  maxPointPerGame: any;
+  eventObj: any;
+  sideSwitch:number;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl: ModalController) {
-    this.eventType = this.navParams.get('eventType');
-    this.maxPointPerGame = this.navParams.get('maxPointPerGame');
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public modalCtrl: ModalController,
+    public viewCtrl: ViewController,
+    public alertCtrl: AlertController) {
+    this.eventObj = this.navParams.get('data');
+    switch (this.eventObj.maxPointPerGame) {
+      case '11':
+        this.sideSwitch=6;
+        break;
+      case '15':
+        this.sideSwitch=8;
+        break;
+      case '21':
+        this.sideSwitch=11;
+        break;
+    }
     this.isFinishGameDisabled = true;
     this.isUndoDisabled=true;
     this.isSideOutDisabled = true;
     this.isPlayerDisabled = true;
+    this.isStartGameDisabled=false;
     this.points = [];
     this.teamPoints = [];
     this.teams = [];
     this.nowServing=2;
-    for (let k: number = 1; k <= this.maxPointPerGame; k++) {
+    for (let k: number = 1; k <= this.eventObj.maxPointPerGame; k++) {
       this.points[k - 1] = k;
       let teamPoint = new PointModel(k, "INITIAL");
       this.teamPoints.push(teamPoint);
     }
     /* Setting team,players and initial points */
-    this.team1 = new TeamModel(((this.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 1", "team1", false, false, true)] : [new PlayerModel("Player 1A", "player1A", false, false, true), new PlayerModel("Player 1B", "player1B", false, false, true)]), this.teamPoints, 0, false);
-    this.team2 = new TeamModel(((this.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 2", "team2", false, false, true)] : [new PlayerModel("Player 2A", "player2A", false, false, true), new PlayerModel("Player 2B", "player2B", false, false, true)]), this.teamPoints, 0, false);
+    this.team1 = new TeamModel(((this.eventObj.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 1", "team1", false, false, true)] : [new PlayerModel("Player 1A", "player1A", false, false, true), new PlayerModel("Player 1B", "player1B", false, false, true)]), this.teamPoints, 0, false);
+    this.team2 = new TeamModel(((this.eventObj.eventType.toUpperCase() === 'SINGLES') ? [new PlayerModel("Player 2", "team2", false, false, true)] : [new PlayerModel("Player 2A", "player2A", false, false, true), new PlayerModel("Player 2B", "player2B", false, false, true)]), this.teamPoints, 0, false);
+    console.log(this.team1);
     this.teams.push(this.team1);
     this.teams.push(this.team2);
   }
@@ -59,7 +77,7 @@ export class ScoringPage {
           teamPoint.setPointType("CLICKED");
       });
       /* Showing Finish Game after the last point is clicked */
-      if (point == this.maxPointPerGame) {
+      if (point == this.eventObj.maxPointPerGame) {
         this.isFinishGameDisabled = false;
       }
       /* Setting current score */
@@ -72,6 +90,14 @@ export class ScoringPage {
     }
     /* Setting summary */
     this.summary.push(new SummaryModel(1,'captureScore',[this.team1,this.team2]));
+    if(point === this.sideSwitch){
+        let alert = this.alertCtrl.create({
+        title: 'Side Switch',
+        subTitle: 'Please advise teams to switch sides',
+        buttons: ['Dismiss']
+      });
+      alert.present();
+    }
   }
   servingClick($event) {
     /* This is to temporarily enable serving for both teams(on first click)
@@ -95,7 +121,7 @@ export class ScoringPage {
       );*/
       this.nowServing=1;
     }
-    
+
     switch ($event.currentTarget.id) {
       case 'team1':
         this.team1.setFirstServing(true);
@@ -188,7 +214,7 @@ export class ScoringPage {
     }
 
     /* Disabling server selection for Singles after first Server is choosen */
-    if (this.eventType.toUpperCase() === 'SINGLES') {
+    if (this.eventObj.eventType.toUpperCase() === 'SINGLES') {
       this.isSideOutDisabled = false;
       this.isUndoDisabled=false;
       this.isPlayerDisabled = true;
@@ -209,6 +235,7 @@ export class ScoringPage {
         });
       /* Only for first time server click on Doubles */
       if (this.isFirstTimeForDoubles) {
+        this.isStartGameDisabled=true;
         this.nowServing=2;
         this.isSideOutDisabled = false;
         this.isUndoDisabled=false;
@@ -252,7 +279,7 @@ export class ScoringPage {
       if (this.team1.isServing()) {
         /* Switching serves on side out */
         this.team2.setServing(true);
-        if (this.eventType.toUpperCase() === 'DOUBLES') {
+        if (this.eventObj.eventType.toUpperCase() === 'DOUBLES') {
           /* Forcing to choose first server on other team */
           if (!this.team2.getPlayers()[0].isFirstServing() &&
             !this.team2.getPlayers()[1].isFirstServing()) {
@@ -298,7 +325,7 @@ export class ScoringPage {
             teamPoint.setPointType("INITIAL");
         })
         /* Enabling other server score board based on current score for Singles*/
-        if (this.eventType.toUpperCase() === 'SINGLES') {
+        if (this.eventObj.eventType.toUpperCase() === 'SINGLES') {
           this.team2.getPoints().forEach(teamPoint => {
             if (teamPoint.getPointScore() > this.team2.getScore()) {
               teamPoint.setPointType("AVAILABLE")
@@ -309,7 +336,7 @@ export class ScoringPage {
         /* Switching serves on side out */
         this.team1.setServing(true);
         this.team2.setServing(false);
-        if (this.eventType.toUpperCase() === 'DOUBLES') {
+        if (this.eventObj.eventType.toUpperCase() === 'DOUBLES') {
           /* Forcing to choose first server on other team */
           if (!this.team1.getPlayers()[0].isFirstServing() &&
             !this.team1.getPlayers()[1].isFirstServing()) {
@@ -354,7 +381,7 @@ export class ScoringPage {
             teamPoint.setPointType("INITIAL");
         })
         /* Enabling other server score board based on current score */
-        if (this.eventType.toUpperCase() === 'SINGLES') {
+        if (this.eventObj.eventType.toUpperCase() === 'SINGLES') {
           this.team1.getPoints().forEach(teamPoint => {
             if (teamPoint.getPointScore() > this.team1.getScore())
               teamPoint.setPointType("AVAILABLE")

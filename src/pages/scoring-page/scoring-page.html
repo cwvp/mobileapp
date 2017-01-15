@@ -1,17 +1,47 @@
 <ion-header>
-  <ion-navbar color="primary">
+  <ion-navbar>
     <ion-title>
-      Test App
+      Court - {{eventObj.courtNumber}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <ion-grid>
-
+    <ion-row>
+      <ion-col class="no-border">
+      <div class="tournament">
+        <h2>{{eventObj.tournamentName}}</h2>
+      </div>
+    </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="no-border" width-60>
+      <div class="label-align-left">
+        <h4>{{eventObj.eventName}}</h4>
+      </div>
+    </ion-col>
+    <ion-col class="no-border" width-40>
+    <div class="label-align-right">
+      <h4>{{eventObj.venue}}</h4>
+    </div>
+  </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="no-border">
+      <div class="label-align-left" width-75>
+        <strong>Referee Name : </strong>{{eventObj.refereeName}}
+      </div>
+    </ion-col>
+    <ion-col class="no-border">
+      <div class="label-align-right" width-25>
+        <strong>Match ID : </strong>{{eventObj.matchNumber}}
+      </div>
+  </ion-col>
+    </ion-row>
     <ion-row>
       <ion-col width-20>
-        <div [ngSwitch]="eventType">
+        <div [ngSwitch]="eventObj.eventType">
           <template [ngSwitchCase]="'SINGLES'">
             <div class="player">
               <input type='radio' name='players' id="{{team1.getPlayers()[0].getPlayerId()}}" [checked]="team1.isServing()" [disabled]="isPlayerDisabled" (change)="servingClick($event)" />
@@ -42,7 +72,7 @@
 
     <ion-row>
       <ion-col width-20>
-        <div [ngSwitch]="eventType">
+        <div [ngSwitch]="eventObj.eventType">
           <template [ngSwitchCase]="'SINGLES'">
             <div class="player">
               <input type='radio' name='players' id="{{team2.getPlayers()[0].getPlayerId()}}" [checked]="team2.isServing()" [disabled]="isPlayerDisabled" (change)="servingClick($event)" />
@@ -71,37 +101,14 @@
     </ion-row>
 
   </ion-grid>
-  <button margin-right ion-button class="button--medium" (click)="startGame()">Start Game</button>
+  <button margin-right ion-button class="button--medium" [disabled]="isStartGameDisabled" (click)="startGame()">Start Game</button>
   <button margin-right ion-button class="button--medium" [disabled]="isSideOutDisabled" (click)="sideOut()">Side Out</button>
-  <button margin-right ion-button class="button--medium" [disabled]="isUndoDisabled" (click)="undo()">Undo</button>
+  <!--<button margin-right ion-button class="button--medium" [disabled]="isUndoDisabled" (click)="undo()">Undo</button>-->
   <button margin-right ion-button class="button--medium" [hidden]="isFinishGameDisabled">Finish Game</button>
   <ion-grid>
-    <!--<ion-row>
-      <ion-col width-20>
-        <div class="score">
-          <label>Score</label>
-        </div>
-      </ion-col>
-      <ion-col width-40>
-        <div [class.score-display]="team1.isServing()" [class.score]="!team1.isServing()">
-          <label>{{team1.getScore()}}</label>
-        </div>
-        <div class="firstserver" *ngIf="team1.isFirstServing()">
-          <h3>S</h3>
-        </div>
-      </ion-col>
-      <ion-col width-40>
-        <div [class.score-display]="team2.isServing()" [class.score]="!team2.isServing()">
-          <label>{{team2.getScore()}}</label>
-        </div>
-        <div class="firstserver" *ngIf="team2.isFirstServing()">
-          <h4>S</h4>
-        </div>
-      </ion-col>
-    </ion-row>-->
     <ion-row>
       <ion-col width-20>
-        <div [ngSwitch]="eventType">
+        <div [ngSwitch]="eventObj.eventType">
           <template [ngSwitchCase]="'SINGLES'">
             <div [class.player]="!team1.isServing()" [class.score-display]="team1.isServing()">
               <label for='team1'>{{team1.getPlayers()[0].getPlayerName()}}</label>
@@ -131,7 +138,7 @@
 
     <ion-row>
       <ion-col width-20>
-        <div [ngSwitch]="eventType">
+        <div [ngSwitch]="eventObj.eventType">
           <template [ngSwitchCase]="'SINGLES'">
             <div [class.player]="!team2.isServing()" [class.score-display]="team2.isServing()">
               <label for='team2'>{{team2.getPlayers()[0].getPlayerName()}}</label>
@@ -158,7 +165,7 @@
         </div>
       </ion-col>
     </ion-row>
-    <ion-row>
+    <ion-row *ngIf="eventObj.eventType==='DOUBLES'">
       <ion-col width-20>
         <div class="player">
             <h3>Server(1 or 2)</h3>

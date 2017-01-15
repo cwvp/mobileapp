@@ -1,3 +1,14 @@
 page-popup-page {
-
+  .button--medium {
+    min-width: 140px;
+    border-radius: 4px;
+    color:black;
+    background-color: #d1f079;
+  }
+  .scroll-content {
+    //background-image: url(../assets/tennis-court.jpg);
+    background-color: #4197e5;
+    //background-color: #87CEFA;
+    background-size: cover;
+  }
 }

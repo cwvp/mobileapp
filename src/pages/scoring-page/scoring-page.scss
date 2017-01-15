@@ -1,9 +1,16 @@
 page-scoring {
+  .scroll-content {
+    //background-image: url(../assets/tennis-court.jpg);
+    background-color: #4197e5;
+    //background-color: #87CEFA;
+    background-size: cover;
+  }
   @mixin buttonRound($button_color){
     width: 30px;
     height: 30px;
     border: solid 1px #000;
     border-radius: 50%;
+    color:black;
     background-color: $button_color;
 }
   @mixin labelPosition($margin_top,$text_align){
@@ -15,14 +22,22 @@ page-scoring {
     font-weight: $font_weight;
   }
   .button--round {
-    @include buttonRound(map-get($colors, 'primary'));
+    //@include buttonRound(map-get($colors, 'primary'));
+    @include buttonRound(#d1f079);
+
   }
   .button--round--sideOut {
-    @include buttonRound(map-get($colors, 'danger'));
+    //@include buttonRound(map-get($colors, 'danger'));
+    @include buttonRound(#d0111b);
+    color:white;
+
   }
 
   .button--medium {
     min-width: 140px;
+    border-radius: 4px;
+    color:black;
+    background-color: #d1f079;
   }
 
   .player {
@@ -56,5 +71,17 @@ page-scoring {
   .score-display{
     @include labelPosition(20px,center);
     @include highlighted(27px,bold);
+  }
+  .tournament{
+    text-align: center;
+  }
+  .no-border{
+    border: none;
+  }
+  .label-align-left{
+    @include labelPosition(0px,left);
+  }
+  .label-align-right{
+    @include labelPosition(0px,right);
   }
 }
