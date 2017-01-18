@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Court - {{eventObj.courtNumber}}
+      Scoring Pad
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -36,6 +36,18 @@
     <ion-col class="no-border">
       <div class="label-align-right" width-25>
         <strong>Match ID : </strong>{{eventObj.matchNumber}}
+      </div>
+  </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="no-border">
+      <div class="label-align-left" width-75>
+        <strong>Court Number : </strong>{{eventObj.courtNumber}}
+      </div>
+    </ion-col>
+    <ion-col class="no-border">
+      <div class="label-align-right" width-25 *ngIf="matchStartTime">
+        <strong>Match/Game start time : </strong>{{matchStartTime}}
       </div>
   </ion-col>
     </ion-row>
@@ -134,6 +146,18 @@
           <label>{{team1.getScore()}}</label>
         </div>
       </ion-col>
+      <ion-col width-20 class="no-border">
+      </ion-col>
+      <ion-col width-20>
+        <div class="player">
+            <h2>Timeout</h2>
+        </div>
+      </ion-col>
+      <ion-col width-20 class="padding-center">
+        <!-- <div class="player"> -->
+            <button ion-button small class="button--timeout" *ngFor="let timeOut of timeOuts" [disabled]="timeOut.isDisabled()" (click)="startTimeOut(timeOut)">{{timeOut.timeOutId}}</button>
+        <!-- </div> -->
+      </ion-col>
     </ion-row>
 
     <ion-row>
@@ -178,4 +202,5 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  <timer #timer [timeInSeconds]="60"></timer>
 </ion-content>

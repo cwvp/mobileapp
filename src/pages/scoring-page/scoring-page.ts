@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
+import { Component,ViewChild } from '@angular/core';
 import { ModalController, NavController, NavParams, ViewController,AlertController } from 'ionic-angular';
 import { PopupPage } from '../popup-page/popup-page';
 import { PointModel } from '../../models/point.model';
 import { TeamModel } from '../../models/team.model';
 import { PlayerModel } from '../../models/player.model';
 import { SummaryModel } from '../../models/summary.model';
+import { TimeOutModel } from '../../models/timeout.model';
+import { TimerComponent } from '../../components/timer/timer';
+
+let moment = require('moment-timezone');
 
 @Component({
   selector: 'page-scoring',
   templateUrl: 'scoring-page.html'
 })
 export class ScoringPage {
+  @ViewChild(TimerComponent) timer: TimerComponent;
   points: number[];
   teams: TeamModel[] = [];
   teamPoints: PointModel[] = [];
@@ -30,6 +35,10 @@ export class ScoringPage {
 
   eventObj: any;
   sideSwitch:number;
+  matchStartTime:any;
+
+  timeOuts:TimeOutModel[];
+
 
   constructor(
     public navCtrl: NavController,
@@ -38,15 +47,23 @@ export class ScoringPage {
     public viewCtrl: ViewController,
     public alertCtrl: AlertController) {
     this.eventObj = this.navParams.get('data');
+    this.timeOuts=[];
     switch (this.eventObj.maxPointPerGame) {
       case '11':
         this.sideSwitch=6;
+        this.timeOuts.push(new TimeOutModel(1, "", true));
+        this.timeOuts.push(new TimeOutModel(2, "", true));
         break;
       case '15':
         this.sideSwitch=8;
+        this.timeOuts.push(new TimeOutModel(1, "", true));
+        this.timeOuts.push(new TimeOutModel(2, "", true));
         break;
       case '21':
         this.sideSwitch=11;
+        this.timeOuts.push(new TimeOutModel(1, "", true));
+        this.timeOuts.push(new TimeOutModel(2, "", true));
+        this.timeOuts.push(new TimeOutModel(3, "", true));
         break;
     }
     this.isFinishGameDisabled = true;
@@ -77,7 +94,7 @@ export class ScoringPage {
       (this.team1.isServing() ? this.team1.getPoints() : this.team2.getPoints()).forEach(teamPoint => {
         if(teamPoint.getPointScore()=== (point-1) && point>1){
           if(teamPoint.getPointType() === 'AVAILABLE'){
-            this.showAlert();
+            this.showAlert('Invalid scoring',"Can't skip score");
             this.skipScoring=true;
           }
         }
@@ -409,9 +426,13 @@ export class ScoringPage {
     let addModal = this.modalCtrl.create(PopupPage);
     addModal.present();
 
+    this.timeOuts.forEach(timeOutObj=>{
+      timeOutObj.setDisabled(false);
+    });
 
     /* Disabling player serves before selecting first server */
     this.isPlayerDisabled = false;
+    this.matchStartTime = moment.utc();
     /*  this.isTeam1Disabled = false;
       this.isTeam2Disabled = false; */
     this.team1.getPlayers().forEach(player => {
@@ -434,12 +455,40 @@ export class ScoringPage {
     else
       return true;
   }
-  showAlert() {
+  showAlert(alertTitle,alertSubTitle) {
     let toast = this.alertCtrl.create({
-      title: 'Invalid scoring',
-      subTitle: "Can't skip score",
+      title: alertTitle,
+      subTitle: alertSubTitle,
       buttons: ['OK']
     });
     toast.present();
   }
+  startTimeOut(timeOut:TimeOutModel){
+    let skipTimeOut:boolean=false;
+    if(timeOut.getTimeOutId()>1){
+      this.timeOuts.forEach(timeOutObj=>{
+        if(timeOutObj.getTimeOutId()<timeOut.getTimeOutId() && timeOutObj.getStartTime()===""){
+          this.showAlert("Invalid action","Can't skip timeouts");
+          skipTimeOut=true;
+        }
+      });
+    }
+    if(!skipTimeOut){
+    if(timeOut.getTimeOutId()===1){
+      this.timeOuts[0].setStartTime(moment.utc());
+      this.timeOuts[0].setDisabled(true);
+    }
+    if(timeOut.getTimeOutId()===2){
+      this.timeOuts[1].setStartTime(moment.utc());
+      this.timeOuts[1].setDisabled(true);
+    }
+    if(timeOut.getTimeOutId()===3){
+      this.timeOuts[2].setStartTime(moment.utc());
+      this.timeOuts[2].setDisabled(true);
+    }
+    setTimeout(() => {
+       this.timer.startTimer();
+     }, 1000)
+  }
+}
 }

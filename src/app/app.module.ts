@@ -6,13 +6,15 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { ScoringPage } from '../pages/scoring-page/scoring-page';
 import { PopupPage } from '../pages/popup-page/popup-page';
+import { TimerComponent } from '../components/timer/timer';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     ScoringPage,
-    PopupPage
+    PopupPage,
+    TimerComponent
   ],
   imports: [
     IonicModule.forRoot(MyApp),FormsModule,BrowserModule
